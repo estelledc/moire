@@ -9,9 +9,26 @@
 
     // Pagination State
     let visibleCount = $state(config.pageSize || 20);
+    let selectedTag = $state<string | null>(null);
+
+    // Derived: Get all unique tags
+    const allTags = $derived.by(() => {
+        const tags = new Set<string>();
+        data.memos.forEach(memo => {
+            memo.tags?.forEach(t => tags.add(t));
+        });
+        return Array.from(tags).sort();
+    });
+
+    // Derived: Filter memos by tag
+    const filteredMemos = $derived(
+        selectedTag !== null
+            ? data.memos.filter(memo => memo.tags?.includes(selectedTag as string))
+            : data.memos
+    );
     
     // Derived: Slice the memos first
-    const visibleMemos = $derived(data.memos.slice(0, visibleCount));
+    const visibleMemos = $derived(filteredMemos.slice(0, visibleCount));
 
     // Group memos by Date (YYYY-MM-DD)
     const groupedMemos = $derived.by(() => {
@@ -39,9 +56,24 @@
                 <p>{new Date().toLocaleDateString()}</p>
             </div>
             <div class="divider">================================</div>
+            
+            {#if selectedTag}
+                <div class="tags-section">
+                    <div class="tags-label">
+                        FILTERING BY: <button class="tag-btn active" onclick={() => selectedTag = null}>#{selectedTag}</button>
+                    </div>
+                    <div class="divider">--------------------------------</div>
+                </div>
+            {/if}
         </header>
 
-        <div class="receipt-body">
+        <div class="receipt-body" onclick={(e) => {
+            const target = (e.target as HTMLElement).closest('.memo-tag');
+            if (target) {
+                const tag = (target as HTMLElement).dataset.tag;
+                if (tag) selectedTag = selectedTag === tag ? null : tag;
+            }
+        }} role="presentation">
             {#each Object.entries(groupedMemos) as [dateKey, memos]}
                 <div class="date-group">
                     <div class="date-header">
@@ -140,6 +172,51 @@
         overflow: hidden;
         white-space: nowrap;
         margin: 10px 0;
+    }
+
+    .tags-section {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .tags-label {
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    /* .memo-tag is injected into the HTML content */
+    :global(.memo-tag) {
+        background: none;
+        border: none;
+        padding: 0;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: bold;
+        color: #000;
+        cursor: pointer;
+        text-decoration: underline;
+        transition: color 0.2s;
+    }
+    
+    :global(.memo-tag:hover) {
+        color: #666;
+    }
+
+    .tag-btn {
+        background: none;
+        border: 1px solid #000;
+        padding: 2px 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-family: inherit;
+        text-transform: uppercase;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    .tag-btn:hover, .tag-btn.active {
+        color: black;
     }
 
     .date-group {

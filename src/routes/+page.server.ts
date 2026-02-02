@@ -6,6 +6,7 @@ type Memo = {
 	slug: string;
   content: string; // Now HTML
 	date: Date;
+  tags: string[];
 };
 
 export const load: PageServerLoad = async () => {
@@ -29,17 +30,8 @@ export const load: PageServerLoad = async () => {
         return markdown.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, distinctUrl) => {
           let assetKeyLink = '';
 
-          // Check if it's a raw GitHub URL that maps to our local files
-          // Example: https://raw.github.../src/memos/images/file.png
-          if (distinctUrl.includes('/src/memos/')) {
-            // Extract path starting from /src/memos
-            const matchPath = distinctUrl.match(/\/src\/memos\/(.*?)(?:\?|$)/);
-            if (matchPath && matchPath[1]) {
-              assetKeyLink = `/src/memos/${ matchPath[1] }`;
-            }
-          }
           // Handle standard relative paths
-          else if (!distinctUrl.startsWith('http') && !distinctUrl.startsWith('/')) {
+          if (!distinctUrl.startsWith('http') && !distinctUrl.startsWith('/')) {
             const memoDir = memoPath.substring(0, memoPath.lastIndexOf('/'));
             let assetPath = `${ memoDir }/${ distinctUrl }`;
             assetPath = assetPath.replace('/./', '/');
@@ -69,8 +61,17 @@ export const load: PageServerLoad = async () => {
         });
       };
 
-      const resolvedMarkdown = resolveAssets(markdownString, path);
-      const htmlContent = await marked.parse(resolvedMarkdown);
+      let processedMarkdown = resolveAssets(markdownString, path);
+
+      // Wrap hashtags in clickable elements
+      // Use a negative lookahead to avoid matching CSS hex codes or existing HTML entities if possible, 
+      // but for now simple regex is sufficient for standard markdown text.
+      processedMarkdown = processedMarkdown.replace(
+        /(^|\s)#([^\s#.,!?;:()\[\]"']+)/g,
+        '$1<button class="memo-tag" data-tag="$2">#$2</button>'
+      );
+
+      const htmlContent = await marked.parse(processedMarkdown);
 
       let date = new Date();
       // Parse date from filename: YYYYMMDDHHMMSS
@@ -85,10 +86,19 @@ export const load: PageServerLoad = async () => {
         date = new Date(year, month, day, hour, minute, second);
       }
 
+      let tags: string[] = [];
+      const tagMatch = markdownString.match(/#([^\s#.,!?;:()\[\]"']+)/g);
+      if (tagMatch) {
+        tags = tagMatch.map(t => t.slice(1)); // Remove #
+        // Optional: Remove duplicates within the same memo
+        tags = [...new Set(tags)];
+      }
+
       return {
         slug,
         content: htmlContent, // Send HTML to client
-        date
+        date,
+        tags
       };
     })
   );
