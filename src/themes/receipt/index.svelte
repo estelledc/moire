@@ -89,9 +89,7 @@
       {/each}
 
       {#if data.memos.length === 0}
-        <div class="empty-state">
-          <p>NO DATA.</p>
-        </div>
+          <p class="text-center">NO DATA.</p>
       {/if}
 
       {#if memoList.visibleCount < data.memos.length}
