@@ -34,8 +34,11 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Inject Memos from memos branch
+        if: github.repository == 'moirelog/moire'
+        run: |
+          git fetch origin memos
+          git checkout origin/memos -- src/memos || echo "Memos branch not found or empty"
 
       - name: Build
         run: pnpm run build
