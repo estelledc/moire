@@ -3,6 +3,8 @@ import { format } from 'date-fns';
 type MemoItem = {
     date: Date | string;
     tags?: string[];
+    slug?: string;
+    content?: string;
 };
 
 type MemoData<T extends MemoItem> = {
@@ -27,8 +29,26 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         return tag && tag.length > 0 ? tag : null;
     }
 
+    function readSearchQueryFromUrl() {
+        if (typeof window === 'undefined') {
+            return '';
+        }
+
+        const query = new URLSearchParams(window.location.search).get('q');
+        return query && query.length > 0 ? query : '';
+    }
+
+    function getMemoSearchText(memo: T) {
+        const slug = memo.slug || '';
+        const tags = memo.tags?.join(' ') || '';
+        const content = (memo.content || '').replace(/<[^>]*>/g, ' ');
+
+        return `${slug} ${tags} ${content}`.toLowerCase();
+    }
+
     let visibleCount = $state(getPageSize());
     let selectedTag = $state<string | null>(null);
+    let searchQuery = $state('');
     let isUrlTagInitialized = $state(false);
 
     // Derived: Get all unique tags
@@ -41,11 +61,26 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
     });
 
     // Derived: Filter memos by tag
-    const filteredMemos = $derived(
-        selectedTag !== null
-            ? getData().memos.filter((memo) => memo.tags?.includes(selectedTag as string))
-            : getData().memos
-    );
+    const normalizedSearchQuery = $derived(searchQuery.trim().toLowerCase());
+
+    const filteredMemos = $derived.by(() => {
+        const currentTag = selectedTag;
+        const currentQuery = normalizedSearchQuery;
+
+        return getData().memos.filter((memo) => {
+            const matchesTag = currentTag === null || memo.tags?.includes(currentTag);
+
+            if (!matchesTag) {
+                return false;
+            }
+
+            if (!currentQuery) {
+                return true;
+            }
+
+            return getMemoSearchText(memo).includes(currentQuery);
+        });
+    });
 
     // Derived: Slice the memos first
     const visibleMemos = $derived(filteredMemos.slice(0, visibleCount));
@@ -88,6 +123,7 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
 
         const syncSelectedTagFromUrl = () => {
             selectedTag = readTagFromUrl();
+            searchQuery = readSearchQueryFromUrl();
             visibleCount = getPageSize();
         };
 
@@ -114,6 +150,14 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
             currentUrl.searchParams.delete('tag');
         }
 
+        const normalizedQuery = searchQuery.trim();
+
+        if (normalizedQuery) {
+            currentUrl.searchParams.set('q', normalizedQuery);
+        } else {
+            currentUrl.searchParams.delete('q');
+        }
+
         const nextQuery = currentUrl.searchParams.toString();
         const nextUrl = `${currentUrl.pathname}${nextQuery ? `?${nextQuery}` : ''}${currentUrl.hash}`;
         const existingUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
@@ -132,14 +176,31 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         visibleCount = getPageSize();
     }
 
+    function setSearchQuery(query: string) {
+        searchQuery = query;
+        visibleCount = getPageSize();
+    }
+
+    function clearSearchQuery() {
+        if (searchQuery.length === 0) {
+            return;
+        }
+
+        searchQuery = '';
+        visibleCount = getPageSize();
+    }
+
     return {
         get visibleCount() { return visibleCount },
         get selectedTag() { return selectedTag },
+        get searchQuery() { return searchQuery },
         get allTags() { return allTags },
         get filteredMemos() { return filteredMemos },
         get visibleMemos() { return visibleMemos },
         get groupedMemos() { return groupedMemos },
         loadMore,
-        selectTag
+        selectTag,
+        setSearchQuery,
+        clearSearchQuery
     };
 }

@@ -36,17 +36,52 @@
   <header class="mx-auto mb-8 md:mb-16 px-4">
     <h1 class="mb-3 text-4xl font-bold tracking-tight text-[var(--bento-title)]">{config.title}</h1>
     <p class="text-[var(--bento-muted)]">{config.description}</p>
-    
-    {#if memoList.selectedTag}
-      <div class="mt-8 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-        <span class="text-xs font-bold uppercase tracking-widest text-[var(--bento-subtle)]">Filtering by:</span>
+
+    <div class="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center">
+      <label class="sr-only" for="memo-search">Search memos</label>
+      <input
+        id="memo-search"
+        type="search"
+        placeholder="Search by content or tag"
+        value={memoList.searchQuery}
+        oninput={(e) => memoList.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
+        class="w-full rounded-xl border border-[var(--bento-pill-border)] bg-[var(--bento-card-bg)] px-4 py-2 text-sm text-[var(--bento-body)] outline-none backdrop-blur transition-all placeholder:text-[var(--bento-subtle)] focus:border-[var(--bento-active-border)] focus:ring-2 focus:ring-[var(--bento-active-bg)]"
+      />
+      {#if memoList.searchQuery}
         <button
-          onclick={() => memoList.selectTag(null)}
-          class="group flex items-center gap-2 rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-1.5 text-sm font-semibold italic text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
+          onclick={memoList.clearSearchQuery}
+          class="rounded-xl border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-2 text-sm font-semibold text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
         >
-          #{memoList.selectedTag}
-          <span class="text-[var(--bento-pill-text)] transition-colors group-hover:text-[var(--bento-title)]">✕</span>
+          Clear
         </button>
+      {/if}
+    </div>
+
+    <p class="mt-2 text-xs tracking-wide text-[var(--bento-subtle)]">
+      {memoList.filteredMemos.length} result{memoList.filteredMemos.length === 1 ? '' : 's'}
+    </p>
+    
+    {#if memoList.selectedTag || memoList.searchQuery}
+      <div class="mt-8 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <span class="text-xs font-bold uppercase tracking-widest text-[var(--bento-subtle)]">Filters:</span>
+        {#if memoList.selectedTag}
+          <button
+            onclick={() => memoList.selectTag(null)}
+            class="group flex items-center gap-2 rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-1.5 text-sm font-semibold italic text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
+          >
+            #{memoList.selectedTag}
+            <span class="text-[var(--bento-pill-text)] transition-colors group-hover:text-[var(--bento-title)]">✕</span>
+          </button>
+        {/if}
+        {#if memoList.searchQuery}
+          <button
+            onclick={memoList.clearSearchQuery}
+            class="group flex items-center gap-2 rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-1.5 text-sm font-semibold italic text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
+          >
+            "{memoList.searchQuery}"
+            <span class="text-[var(--bento-pill-text)] transition-colors group-hover:text-[var(--bento-title)]">✕</span>
+          </button>
+        {/if}
       </div>
     {/if}
   </header>
@@ -109,6 +144,12 @@
     {/each}
   </div>
 
+  {#if memoList.filteredMemos.length === 0}
+    <div class="mt-8 px-4 text-center text-sm text-[var(--bento-muted)]">
+      No memos match the current filters.
+    </div>
+  {/if}
+
   {#if memoList.visibleMemos.length < memoList.filteredMemos.length}
     <div class="mt-16 flex justify-center pb-16">
       <button
@@ -138,11 +179,6 @@
       opacity: 0.5;
   }
 
-  [data-selected-tag="Academic"] :global(.tag-link[data-tag="Academic"]),
-  [data-selected-tag="Bento"] :global(.tag-link[data-tag="Bento"]),
-  [data-selected-tag="Cyberpunk"] :global(.tag-link[data-tag="Cyberpunk"]),
-  [data-selected-tag="Pixel"] :global(.tag-link[data-tag="Pixel"]),
-  [data-selected-tag="Receipt"] :global(.tag-link[data-tag="Receipt"]),
   [data-selected-tag]:not([data-selected-tag="null"]) :global(.tag-link.active) {
       opacity: 1 !important;
       background-color: var(--bento-active-bg) !important;
