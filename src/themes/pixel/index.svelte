@@ -105,7 +105,7 @@
                         [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--accent-color)] [&_blockquote]:bg-[var(--bg-color)] [&_blockquote]:py-2 [&_blockquote]:px-4 [&_blockquote]:my-4 [&_blockquote]:italic [&_blockquote]:text-[0.9rem] [&_blockquote]:text-[var(--text-color)] [&_blockquote]:rounded-r-lg
                         [&_pre]:bg-[var(--bg-color)] [&_pre]:border-2 [&_pre]:border-[var(--border-color)] [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
                         [&_pre_code]:bg-transparent [&_pre_code]:text-[var(--text-color)] [&_pre_code]:p-0
-                        [&_.tag-link]:bg-[var(--bg-color)] [&_.tag-link]:text-[var(--accent-color)] [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:rounded-full [&_.tag-link]:text-[11px] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link]:font-bold [&_.tag-link]:transition-all [&_.tag-link]:hover:scale-110
+                        [&_.tag-link]:bg-[var(--bg-color)] [&_.tag-link]:text-[var(--accent-color)] [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:rounded-full [&_.tag-link]:text-[11px] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link]:font-bold [&_.tag-link]:transition-all [&_.tag-link]:hover:scale-110 {memoList.shouldClampMemo(memo) ? 'max-h-[28rem] overflow-hidden' : ''}
                         "
              onclick={(e) => {
                 const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
@@ -117,6 +117,15 @@
           >
             {@html marked.parse(memo.content)}
           </div>
+
+          {#if memoList.isMemoLong(memo)}
+            <button
+              onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+              class="mt-2 bg-[var(--bg-color)] px-2 py-1 text-[10px] font-bold uppercase text-[var(--border-color)] border border-[var(--border-color)] shadow-[2px_2px_0_0_var(--text-color)] hover:text-[var(--accent-color)] transition-colors"
+            >
+              {memoList.isMemoExpanded(memo.slug) ? '收起' : '展开全文'}
+            </button>
+          {/if}
         </div>
 
         <div

@@ -58,7 +58,7 @@
               [&_code]:text-[0.8rem] [&_code]:bg-gray-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-gray-800 [&_code]:font-mono
               [&_pre]:bg-gray-50 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:text-[0.8rem] [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:border [&_pre]:border-gray-100
               [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-gray-800
-              [&_.tag-link]:text-[0.85rem] [&_.tag-link]:mr-1 [&_.tag-link]:no-underline [&_.tag-link]:cursor-pointer [&_.tag-link]:font-medium
+              [&_.tag-link]:text-[0.85rem] [&_.tag-link]:mr-1 [&_.tag-link]:no-underline [&_.tag-link]:cursor-pointer [&_.tag-link]:font-medium {memoList.shouldClampMemo(memo) ? 'max-h-[30rem] overflow-hidden' : ''}
             "
             style="
               --link-color: var(--accent-color);
@@ -80,6 +80,15 @@
             </style>
             {@html memo.content}
           </div>
+
+          {#if memoList.isMemoLong(memo)}
+            <button
+              class="mt-2 text-[0.75rem] font-semibold text-gray-500 hover:text-gray-700 transition-colors"
+              onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+            >
+              {memoList.isMemoExpanded(memo.slug) ? '收起' : '展开全文'}
+            </button>
+          {/if}
         </article>
       {/each}
     </div>

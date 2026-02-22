@@ -13,11 +13,16 @@ type MemoData<T extends MemoItem> = {
 
 type MemoListConfig = {
     pageSize?: number;
+    previewCharacterLimit?: number;
 };
 
 export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, getConfig: () => MemoListConfig) {
     function getPageSize() {
         return getConfig().pageSize || 20;
+    }
+
+    function getPreviewCharacterLimit() {
+        return getConfig().previewCharacterLimit || 500;
     }
 
     function readTagFromUrl() {
@@ -46,10 +51,15 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         return `${slug} ${tags} ${content}`.toLowerCase();
     }
 
+    function getMemoPlainText(memo: T) {
+        return (memo.content || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
     let visibleCount = $state(getPageSize());
     let selectedTag = $state<string | null>(null);
     let searchQuery = $state('');
     let isUrlTagInitialized = $state(false);
+    let expandedMemoSlugs = $state(new Set<string>());
 
     // Derived: Get all unique tags
     const allTags = $derived.by(() => {
@@ -190,6 +200,38 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         visibleCount = getPageSize();
     }
 
+    function isMemoLong(memo: T) {
+        return getMemoPlainText(memo).length > getPreviewCharacterLimit();
+    }
+
+    function isMemoExpanded(slug: string | undefined) {
+        if (!slug) {
+            return false;
+        }
+
+        return expandedMemoSlugs.has(slug);
+    }
+
+    function shouldClampMemo(memo: T) {
+        return isMemoLong(memo) && !isMemoExpanded(memo.slug);
+    }
+
+    function toggleMemoExpansion(slug: string | undefined) {
+        if (!slug) {
+            return;
+        }
+
+        const nextExpandedMemoSlugs = new Set(expandedMemoSlugs);
+
+        if (nextExpandedMemoSlugs.has(slug)) {
+            nextExpandedMemoSlugs.delete(slug);
+        } else {
+            nextExpandedMemoSlugs.add(slug);
+        }
+
+        expandedMemoSlugs = nextExpandedMemoSlugs;
+    }
+
     return {
         get visibleCount() { return visibleCount },
         get selectedTag() { return selectedTag },
@@ -198,6 +240,10 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         get filteredMemos() { return filteredMemos },
         get visibleMemos() { return visibleMemos },
         get groupedMemos() { return groupedMemos },
+        isMemoLong,
+        isMemoExpanded,
+        shouldClampMemo,
+        toggleMemoExpansion,
         loadMore,
         selectTag,
         setSearchQuery,

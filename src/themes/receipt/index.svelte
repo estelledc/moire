@@ -88,11 +88,20 @@
                   [&_code]:font-mono [&_code]:bg-black/5 [&_code]:px-1
                   [&_pre]:border-y-2 [&_pre]:border-dashed [&_pre]:border-[#ccc] [&_pre]:py-3 [&_pre]:my-4 [&_pre]:overflow-x-auto [&_pre]:text-xs
                   [&_pre_code]:bg-transparent [&_pre_code]:p-0
-                  [&_.tag-link]:bg-transparent [&_.tag-link]:font-bold [&_.tag-link]:underline [&_.tag-link]:decoration-dashed [&_.tag-link]:underline-offset-3 [&_.tag-link]:hover:bg-black [&_.tag-link]:hover:text-white
+                  [&_.tag-link]:bg-transparent [&_.tag-link]:font-bold [&_.tag-link]:underline [&_.tag-link]:decoration-dashed [&_.tag-link]:underline-offset-3 [&_.tag-link]:hover:bg-black [&_.tag-link]:hover:text-white {memoList.shouldClampMemo(memo) ? 'max-h-[28rem] overflow-hidden' : ''}
                 "
               >
                 {@html memo.content}
               </div>
+
+              {#if memoList.isMemoLong(memo)}
+                <button
+                  class="mt-2 bg-transparent border border-black px-2 py-0.5 text-[10px] cursor-pointer uppercase font-bold hover:bg-black hover:text-white transition-colors"
+                  onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+                >
+                  {memoList.isMemoExpanded(memo.slug) ? '[ 收起 ]' : '[ 展开全文 ]'}
+                </button>
+              {/if}
             </div>
           {/each}
         </div>

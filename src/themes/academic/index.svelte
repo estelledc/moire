@@ -118,7 +118,7 @@
                         [&_code]:text-[0.85rem] [&_code]:bg-[var(--text-color)]/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-sm [&_code]:font-mono
                         [&_pre]:bg-[var(--text-color)]/5 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:my-6 [&_pre]:border-l-4 [&_pre]:border-[var(--text-color)]/20 [&_pre]:text-sm
                         [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit
-                        [&_.tag-link]:text-xs [&_.tag-link]:mx-1 [&_.tag-link]:font-bold [&_.tag-link]:uppercase [&_.tag-link]:tracking-wider [&_.tag-link]:text-[var(--text-color)]/30 [&_.tag-link:hover]:text-[var(--accent-color)] [&_.tag-link:hover]:underline [&_.tag-link]:no-underline [&_.tag-link]:transition-colors"
+                        [&_.tag-link]:text-xs [&_.tag-link]:mx-1 [&_.tag-link]:font-bold [&_.tag-link]:uppercase [&_.tag-link]:tracking-wider [&_.tag-link]:text-[var(--text-color)]/30 [&_.tag-link:hover]:text-[var(--accent-color)] [&_.tag-link:hover]:underline [&_.tag-link]:no-underline [&_.tag-link]:transition-colors {memoList.shouldClampMemo(memo) ? 'max-h-[30rem] overflow-hidden' : ''}"
                   onclick={(e) => {
                     const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
                     if (target) {
@@ -129,6 +129,15 @@
                 >
                   {@html memo.content}
                 </div>
+
+                {#if memoList.isMemoLong(memo)}
+                  <button
+                    class="mt-2 text-xs font-bold uppercase tracking-wider text-[var(--accent-color)] hover:underline"
+                    onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+                  >
+                    {memoList.isMemoExpanded(memo.slug) ? '收起' : '展开全文'}
+                  </button>
+                {/if}
               </article>
             {/each}
           </div>

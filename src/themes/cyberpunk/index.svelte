@@ -146,7 +146,7 @@
                    [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--accent-color)] [&_blockquote]:pl-4 [&_blockquote]:py-1 [&_blockquote]:my-3 [&_blockquote]:italic [&_blockquote]:text-[0.95rem] [&_blockquote]:bg-[var(--accent-color)]/5
                    [&_pre]:bg-black/40 [&_pre]:border [&_pre]:border-[var(--accent-color)]/30 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
                    [&_pre_code]:text-[var(--accent-color)] [&_pre_code]:bg-transparent [&_pre_code]:p-0
-                   [&_.tag-link]:inline-block [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:border [&_.tag-link]:border-[var(--text-color)]/30 [&_.tag-link]:text-[10px] [&_.tag-link]:tracking-widest [&_.tag-link]:uppercase [&_.tag-link]:text-[var(--text-color)]/60 [&_.tag-link:hover]:bg-[var(--text-color)] [&_.tag-link:hover]:text-[var(--bg-color)] [&_.tag-link]:transition-colors [&_.tag-link]:cursor-pointer [&_.tag-link]:no-underline"
+                   [&_.tag-link]:inline-block [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:border [&_.tag-link]:border-[var(--text-color)]/30 [&_.tag-link]:text-[10px] [&_.tag-link]:tracking-widest [&_.tag-link]:uppercase [&_.tag-link]:text-[var(--text-color)]/60 [&_.tag-link:hover]:bg-[var(--text-color)] [&_.tag-link:hover]:text-[var(--bg-color)] [&_.tag-link]:transition-colors [&_.tag-link]:cursor-pointer [&_.tag-link]:no-underline {memoList.shouldClampMemo(memo) ? 'max-h-[30rem] overflow-hidden' : ''}"
           onclick={(e) => {
             const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
             if (target) {
@@ -157,6 +157,15 @@
         >
           {@html marked.parse(memo.content)}
         </div>
+
+        {#if memoList.isMemoLong(memo)}
+          <button
+            onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+            class="mt-2 inline-block border border-[var(--accent-color)] px-3 py-1 text-[10px] font-bold tracking-[0.2em] text-[var(--accent-color)] hover:bg-[var(--accent-color)] hover:text-[var(--bg-color)] transition-all"
+          >
+            {memoList.isMemoExpanded(memo.slug) ? '// 收起' : '// 展开全文'}
+          </button>
+        {/if}
 
         <style>
           .glitch-text::before,

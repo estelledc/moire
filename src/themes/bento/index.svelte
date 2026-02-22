@@ -118,15 +118,15 @@
                    [&_table]:w-full [&_table]:border-collapse [&_table]:my-5 [&_table]:text-sm
                    [&_th]:border-b-2 [&_th]:border-[var(--bento-table-head-border)] [&_th]:border-dashed [&_th]:text-center [&_th]:py-1 [&_th]:font-semibold [&_th]:text-[var(--bento-heading)]
                    [&_td]:py-1 [&_td]:px-1 [&_td]:border-b [&_td]:border-[var(--bento-table-row-border)] [&_td]:border-dashed [&_td]:text-[var(--bento-body)] [&_td]:text-center
-                   [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--bento-blockquote-border)] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote_p]:my-1 [&_blockquote]:text-[var(--bento-body)] [&_blockquote]:bg-[var(--bento-blockquote-bg)] [&_blockquote]:rounded-r-lg
-                   [&_code]:text-[0.85rem] [&_code]:bg-[var(--bento-code-bg)] [&_code]:text-[var(--bento-code-text)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono
-                   [&_pre]:bg-[var(--bento-pre-bg)] [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-[var(--bento-pre-border)] [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
-                   [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--bento-code-text)]
-                   [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-[var(--bento-tag-bg)] [&_.tag-link]:text-[var(--bento-tag-text)] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-[var(--bento-tag-bg-hover)] [&_.tag-link:hover]:text-[var(--bento-tag-text-hover)]"
-              onclick={(e: MouseEvent) => {
-                const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
-                if (target) {
-                    e.stopPropagation(); 
+                    [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--bento-blockquote-border)] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote_p]:my-1 [&_blockquote]:text-[var(--bento-body)] [&_blockquote]:bg-[var(--bento-blockquote-bg)] [&_blockquote]:rounded-r-lg
+                    [&_code]:text-[0.85rem] [&_code]:bg-[var(--bento-code-bg)] [&_code]:text-[var(--bento-code-text)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono
+                    [&_pre]:bg-[var(--bento-pre-bg)] [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-[var(--bento-pre-border)] [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
+                    [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--bento-code-text)]
+                    [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-[var(--bento-tag-bg)] [&_.tag-link]:text-[var(--bento-tag-text)] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-[var(--bento-tag-bg-hover)] [&_.tag-link:hover]:text-[var(--bento-tag-text-hover)] {memoList.shouldClampMemo(memo) ? 'max-h-[28rem] overflow-hidden' : ''}"
+               onclick={(e: MouseEvent) => {
+                 const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+                 if (target) {
+                     e.stopPropagation(); 
                     const tag = target.dataset.tag;
                     if (tag) memoList.selectTag(tag);
                 }
@@ -134,6 +134,15 @@
           >
             {@html marked.parse(memo.content)}
           </div>
+
+          {#if memoList.isMemoLong(memo)}
+            <button
+              onclick={() => memoList.toggleMemoExpansion(memo.slug)}
+              class="mb-3 self-start rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-3 py-1 text-[11px] font-semibold tracking-wide text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
+            >
+              {memoList.isMemoExpanded(memo.slug) ? '收起' : '展开全文'}
+            </button>
+          {/if}
 
           <div
             class="mt-auto flex items-center justify-between pt-4 text-xs font-semibold tracking-wide text-[var(--bento-meta)] uppercase"
