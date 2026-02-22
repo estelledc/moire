@@ -17,6 +17,7 @@
 	<meta name="description" content={config.description} />
 	<meta name="author" content={config.author} />
 	<meta name="keywords" content={config.keywords} />
+	<meta name="color-scheme" content="light dark" />
 	<link rel="icon" href={favicon} />
   <link rel="canonical" href={config.url} />
 

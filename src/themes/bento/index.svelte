@@ -25,27 +25,27 @@
   }
 </script>
 
-<div class="fixed inset-0 -z-50 h-full w-full bg-[#f0f2f5]"
-     style="background-image: radial-gradient(at 0% 0%, rgba(200, 220, 255, 0.6) 0px, transparent 30%),
-      radial-gradient(at 100% 0%, rgba(242, 235, 222, 0.6) 0px, transparent 30%),
-      radial-gradient(at 100% 100%, rgba(200, 235, 240, 0.6) 0px, transparent 30%),
-      radial-gradient(at 0% 100%, rgba(215, 230, 200, 0.6) 0px, transparent 30%);">
+<div class="fixed inset-0 -z-50 h-full w-full bg-[var(--bento-page-bg)]"
+     style="background-image: radial-gradient(at 0% 0%, var(--bento-grad-a) 0px, transparent 30%),
+      radial-gradient(at 100% 0%, var(--bento-grad-b) 0px, transparent 30%),
+      radial-gradient(at 100% 100%, var(--bento-grad-c) 0px, transparent 30%),
+      radial-gradient(at 0% 100%, var(--bento-grad-d) 0px, transparent 30%);">
 </div>
 
 <div class="min-h-screen py-8 max-w-2xl mx-auto {config.theme} font-sans">
   <header class="mx-auto mb-8 md:mb-16 px-4">
-    <h1 class="mb-3 text-4xl font-bold tracking-tight text-slate-700">{config.title}</h1>
-    <p class=" text-slate-500/80">{config.description}</p>
+    <h1 class="mb-3 text-4xl font-bold tracking-tight text-[var(--bento-title)]">{config.title}</h1>
+    <p class="text-[var(--bento-muted)]">{config.description}</p>
     
     {#if memoList.selectedTag}
       <div class="mt-8 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Filtering by:</span>
+        <span class="text-xs font-bold uppercase tracking-widest text-[var(--bento-subtle)]">Filtering by:</span>
         <button
           onclick={() => memoList.selectTag(null)}
-          class="flex items-center gap-2 rounded-full bg-slate-500/10 px-4 py-1.5 text-sm font-semibold italic text-slate-600 border border-slate-200/50 hover:bg-slate-500/20 transition-all group"
+          class="group flex items-center gap-2 rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-1.5 text-sm font-semibold italic text-[var(--bento-pill-text)] transition-all hover:bg-[var(--bento-pill-bg-hover)]"
         >
           #{memoList.selectedTag}
-          <span class="text-slate-600 group-hover:text-slate-800 transition-colors">✕</span>
+          <span class="text-[var(--bento-pill-text)] transition-colors group-hover:text-[var(--bento-title)]">✕</span>
         </button>
       </div>
     {/if}
@@ -54,7 +54,7 @@
   <div class="mx-auto grid grid-cols-1 gap-6 px-4 2xl:grid-cols-2" data-selected-tag={memoList.selectedTag}>
     {#each memoList.visibleMemos as memo, i (memo.slug)}
       <div
-        class="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl md:rounded-[2rem] border border-white/50 bg-white/30 p-3 md:p-7 shadow-sm backdrop-blur-3xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-8 duration-700"
+        class="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-[var(--bento-card-border)] bg-[var(--bento-card-bg)] p-3 shadow-sm backdrop-blur-3xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-8 md:rounded-[2rem] md:p-7 duration-700"
         in:slide
         onmousemove={handleMouseMove}
         id={memo.slug}
@@ -62,32 +62,32 @@
       >
         <div
           class="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100"
-          style="background: radial-gradient(800px circle at var(--x) var(--y), rgba(129, 110, 216, 0.06), transparent 50%);"
+          style="background: radial-gradient(800px circle at var(--x) var(--y), var(--bento-card-spotlight), transparent 50%);"
         ></div>
         <div class="relative z-10 flex h-full flex-col">
           <div
             class="mb-6 text-[0.95rem] tracking-wide
-                   [&_h1]:text-[1.25rem] [&_h1]:font-bold [&_h1]:mb-2 [&_h1]:mt-5 [&_h1]:text-slate-700
-                   [&_h2]:text-[1.15rem]  [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-slate-700
-                   [&_h3]:text-[1.05rem] [&_h3]:font-semibold [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:text-slate-700
-                   [&_h4]:text-[0.95rem] [&_h4]:font-semibold [&_h4]:mb-1 [&_h4]:mt-2 [&_h4]:text-slate-700
-                   [&_h5]:text-[0.85rem] [&_h5]:font-medium [&_h5]:italic [&_h5]:mb-1 [&_h5]:text-slate-700
-                   [&_p]:my-4 [&_p]:text-slate-600 tracking-wider 
+                   [&_h1]:text-[1.25rem] [&_h1]:font-bold [&_h1]:mb-2 [&_h1]:mt-5 [&_h1]:text-[var(--bento-heading)]
+                   [&_h2]:text-[1.15rem]  [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-[var(--bento-heading)]
+                   [&_h3]:text-[1.05rem] [&_h3]:font-semibold [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:text-[var(--bento-heading)]
+                   [&_h4]:text-[0.95rem] [&_h4]:font-semibold [&_h4]:mb-1 [&_h4]:mt-2 [&_h4]:text-[var(--bento-heading)]
+                   [&_h5]:text-[0.85rem] [&_h5]:font-medium [&_h5]:italic [&_h5]:mb-1 [&_h5]:text-[var(--bento-heading)]
+                   [&_p]:my-4 [&_p]:text-[var(--bento-body)] tracking-wider 
                    [&_ul]:list-disc [&_ul]:pl-5
                    [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:my-4
-                   [&_li]:text-slate-600 [&_li]:my-1
-                   [&_li::marker]:text-slate-400
-                   [&_a]:text-slate-400 [&_a]:underline [&_a]:decoration-1 [&_a]:underline-offset-2 [&_a]:hover:bg-slate-50
-                   [&_strong]:text-slate-600
+                   [&_li]:text-[var(--bento-body)] [&_li]:my-1
+                   [&_li::marker]:text-[var(--bento-marker)]
+                   [&_a]:text-[var(--bento-link)] [&_a]:underline [&_a]:decoration-1 [&_a]:underline-offset-2 [&_a]:hover:bg-[var(--bento-link-hover-bg)]
+                   [&_strong]:text-[var(--bento-strong)]
                    [&_table]:w-full [&_table]:border-collapse [&_table]:my-5 [&_table]:text-sm
-                   [&_th]:border-b-2 [&_th]:border-slate-200 [&_th]:border-dashed [&_th]:text-center [&_th]:py-1 [&_th]:font-semibold [&_th]:text-slate-700
-                   [&_td]:py-1 [&_td]:px-1 [&_td]:border-b [&_td]:border-slate-100 [&_td]:border-dashed [&_td]:text-slate-600 [&_td]:text-center
-                   [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300/70 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote_p]:my-1 [&_blockquote]:text-slate-600 [&_blockquote]:bg-white/30 [&_blockquote]:rounded-r-lg
-                   [&_code]:text-[0.85rem] [&_code]:bg-slate-100 [&_code]:text-slate-700 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono
-                   [&_pre]:bg-slate-50/50 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-slate-200/50 [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
-                   [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-slate-700
-                   [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-white/40 [&_.tag-link]:text-slate-600 [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-white/80 [&_.tag-link:hover]:text-slate-800"
-             onclick={(e) => {
+                   [&_th]:border-b-2 [&_th]:border-[var(--bento-table-head-border)] [&_th]:border-dashed [&_th]:text-center [&_th]:py-1 [&_th]:font-semibold [&_th]:text-[var(--bento-heading)]
+                   [&_td]:py-1 [&_td]:px-1 [&_td]:border-b [&_td]:border-[var(--bento-table-row-border)] [&_td]:border-dashed [&_td]:text-[var(--bento-body)] [&_td]:text-center
+                   [&_blockquote]:border-l-2 [&_blockquote]:border-[var(--bento-blockquote-border)] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:my-3 [&_blockquote_p]:my-1 [&_blockquote]:text-[var(--bento-body)] [&_blockquote]:bg-[var(--bento-blockquote-bg)] [&_blockquote]:rounded-r-lg
+                   [&_code]:text-[0.85rem] [&_code]:bg-[var(--bento-code-bg)] [&_code]:text-[var(--bento-code-text)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:font-mono
+                   [&_pre]:bg-[var(--bento-pre-bg)] [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-[var(--bento-pre-border)] [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
+                   [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--bento-code-text)]
+                   [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-[var(--bento-tag-bg)] [&_.tag-link]:text-[var(--bento-tag-text)] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-[var(--bento-tag-bg-hover)] [&_.tag-link:hover]:text-[var(--bento-tag-text-hover)]"
+              onclick={(e: MouseEvent) => {
                 const target = e.target as HTMLElement;
                 if (target.classList.contains('tag-link')) {
                     e.stopPropagation(); 
@@ -100,7 +100,7 @@
           </div>
 
           <div
-            class="mt-auto flex items-center justify-between pt-4 text-xs font-semibold tracking-wide text-slate-400/80 uppercase"
+            class="mt-auto flex items-center justify-between pt-4 text-xs font-semibold tracking-wide text-[var(--bento-meta)] uppercase"
           >
             <span>{format(new Date(memo.date), 'MMM d, yyyy')}</span>
           </div>
@@ -113,20 +113,20 @@
     <div class="mt-16 flex justify-center pb-16">
       <button
         onclick={memoList.loadMore}
-        class="rounded-full bg-white/50 px-8 py-3 text-sm font-semibold text-slate-600 backdrop-blur-md transition-all hover:bg-white/80 hover:text-slate-900 hover:shadow-lg"
+        class="rounded-full bg-[var(--bento-load-bg)] px-8 py-3 text-sm font-semibold text-[var(--bento-load-text)] backdrop-blur-md transition-all hover:bg-[var(--bento-load-bg-hover)] hover:text-[var(--bento-load-text-hover)] hover:shadow-lg"
       >
         Load More
       </button>
     </div>
   {/if}
-  <footer class="mt-20 text-center text-xs mx-5 tracking-wide text-slate-500 opacity-80">
-    <p>© {new Date().getFullYear()} {config.author}, synced from Apple Notes and powered by <a href="https://moire.blog/" target="_blank" class="hover:text-slate-600 transition-colors">Moire</a></p>
+  <footer class="mt-20 text-center text-xs mx-5 tracking-wide text-[var(--bento-footer)] opacity-80">
+    <p>© {new Date().getFullYear()} {config.author}, synced from Apple Notes and powered by <a href="https://moire.blog/" target="_blank" class="transition-colors hover:text-[var(--bento-title)]">Moire</a></p>
   </footer>
 </div>
 
 <style>
   :global(body.bento) {
-    background-color: #f0f2f5;
+    background-color: var(--bento-page-bg);
   }
 
   [data-selected-tag] :global(.tag-link) {
@@ -145,9 +145,9 @@
   [data-selected-tag="Receipt"] :global(.tag-link[data-tag="Receipt"]),
   [data-selected-tag]:not([data-selected-tag="null"]) :global(.tag-link.active) {
       opacity: 1 !important;
-      background-color: rgb(79, 70, 229, 0.1) !important;
-      color: rgb(79, 70, 229) !important;
-      border-color: rgb(79, 70, 229, 0.2) !important;
+      background-color: var(--bento-active-bg) !important;
+      color: var(--bento-active-text) !important;
+      border-color: var(--bento-active-border) !important;
       font-weight: 700 !important;
   }
 </style>
