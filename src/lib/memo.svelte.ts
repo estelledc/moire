@@ -18,8 +18,18 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         return getConfig().pageSize || 20;
     }
 
+    function readTagFromUrl() {
+        if (typeof window === 'undefined') {
+            return null;
+        }
+
+        const tag = new URLSearchParams(window.location.search).get('tag');
+        return tag && tag.length > 0 ? tag : null;
+    }
+
     let visibleCount = $state(getPageSize());
     let selectedTag = $state<string | null>(null);
+    let isUrlTagInitialized = $state(false);
 
     // Derived: Get all unique tags
     const allTags = $derived.by(() => {
@@ -69,6 +79,48 @@ export function createMemoList<T extends MemoItem>(getData: () => MemoData<T>, g
         visibleMemos.length;
 
         queueMicrotask(syncActiveTagLinkState);
+    });
+
+    $effect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const syncSelectedTagFromUrl = () => {
+            selectedTag = readTagFromUrl();
+            visibleCount = getPageSize();
+        };
+
+        syncSelectedTagFromUrl();
+        isUrlTagInitialized = true;
+
+        window.addEventListener('popstate', syncSelectedTagFromUrl);
+
+        return () => {
+            window.removeEventListener('popstate', syncSelectedTagFromUrl);
+        };
+    });
+
+    $effect(() => {
+        if (typeof window === 'undefined' || !isUrlTagInitialized) {
+            return;
+        }
+
+        const currentUrl = new URL(window.location.href);
+
+        if (selectedTag) {
+            currentUrl.searchParams.set('tag', selectedTag);
+        } else {
+            currentUrl.searchParams.delete('tag');
+        }
+
+        const nextQuery = currentUrl.searchParams.toString();
+        const nextUrl = `${currentUrl.pathname}${nextQuery ? `?${nextQuery}` : ''}${currentUrl.hash}`;
+        const existingUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+        if (nextUrl !== existingUrl) {
+            window.history.replaceState(window.history.state, '', nextUrl);
+        }
     });
 
     function loadMore() {
