@@ -7,7 +7,7 @@
   import {marked} from 'marked';
 
   let {data}: {data: PageData} = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {
@@ -88,8 +88,8 @@
                    [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--bento-code-text)]
                    [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-[var(--bento-tag-bg)] [&_.tag-link]:text-[var(--bento-tag-text)] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-[var(--bento-tag-bg-hover)] [&_.tag-link:hover]:text-[var(--bento-tag-text-hover)]"
               onclick={(e: MouseEvent) => {
-                const target = e.target as HTMLElement;
-                if (target.classList.contains('tag-link')) {
+                const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+                if (target) {
                     e.stopPropagation(); 
                     const tag = target.dataset.tag;
                     if (tag) memoList.selectTag(tag);

@@ -8,7 +8,7 @@
   import {onMount} from 'svelte';
 
   let {data}: {data: PageData} = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {
@@ -148,8 +148,8 @@
                    [&_pre_code]:text-[var(--accent-color)] [&_pre_code]:bg-transparent [&_pre_code]:p-0
                    [&_.tag-link]:inline-block [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:border [&_.tag-link]:border-[var(--text-color)]/30 [&_.tag-link]:text-[10px] [&_.tag-link]:tracking-widest [&_.tag-link]:uppercase [&_.tag-link]:text-[var(--text-color)]/60 [&_.tag-link:hover]:bg-[var(--text-color)] [&_.tag-link:hover]:text-[var(--bg-color)] [&_.tag-link]:transition-colors [&_.tag-link]:cursor-pointer [&_.tag-link]:no-underline"
           onclick={(e) => {
-            const target = e.target as HTMLElement;
-            if (target.classList.contains('tag-link')) {
+            const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+            if (target) {
               const tag = target.dataset.tag;
               if (tag) memoList.selectTag(tag);
             }

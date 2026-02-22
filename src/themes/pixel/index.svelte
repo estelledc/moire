@@ -9,7 +9,7 @@
   import pixelRun from '$lib/assets/pixel-run.png';
 
   let {data}: {data: PageData} = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {
@@ -108,8 +108,8 @@
                         [&_.tag-link]:bg-[var(--bg-color)] [&_.tag-link]:text-[var(--accent-color)] [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:rounded-full [&_.tag-link]:text-[11px] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link]:font-bold [&_.tag-link]:transition-all [&_.tag-link]:hover:scale-110
                         "
              onclick={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.classList.contains('tag-link')) {
+                const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+                if (target) {
                     const tag = target.dataset.tag;
                     if (tag) memoList.selectTag(tag);
                 }

@@ -5,7 +5,7 @@
   import { createMemoList } from '$lib/memo.svelte';
 
   let { data, config }: { data: PageData; config: any } = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {
@@ -65,8 +65,8 @@
             "
             role="presentation"
             onclick={(e) => {
-              const target = e.target as HTMLElement;
-              if (target.classList.contains('tag-link')) {
+              const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+              if (target) {
                   const tag = target.dataset.tag;
                   if (tag) memoList.selectTag(tag);
               }

@@ -7,7 +7,7 @@
   import Background from './Background.svelte';
 
   let {data, config}: {data: PageData; config: any} = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {

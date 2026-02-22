@@ -6,7 +6,7 @@
   import Background from './Background.svelte';
 
   let {data, config}: {data: PageData; config: any} = $props();
-  const memoList = createMemoList(() => data, config);
+  const memoList = createMemoList(() => data, () => config);
 
   $effect(() => {
     if (memoList.selectedTag) {
@@ -120,8 +120,8 @@
                         [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-inherit
                         [&_.tag-link]:text-xs [&_.tag-link]:mx-1 [&_.tag-link]:font-bold [&_.tag-link]:uppercase [&_.tag-link]:tracking-wider [&_.tag-link]:text-[var(--text-color)]/30 [&_.tag-link:hover]:text-[var(--accent-color)] [&_.tag-link:hover]:underline [&_.tag-link]:no-underline [&_.tag-link]:transition-colors"
                   onclick={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.classList.contains('tag-link')) {
+                    const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
+                    if (target) {
                       const tag = target.dataset.tag;
                       if (tag) memoList.selectTag(tag);
                     }
