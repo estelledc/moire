@@ -3,9 +3,9 @@
   import { base } from '$app/paths';
   import {format} from 'date-fns';
   import {config} from '../../../moire.config';
+  import {delegateTagClicks, trackPointerPosition} from '$lib/actions';
   import {createMemoList} from '$lib/memo.svelte';
   import type {PageData} from '../../routes/$types';
-  import {marked} from 'marked';
 
   let {data}: {data: PageData} = $props();
   const memoList = createMemoList(() => data, () => config);
@@ -16,14 +16,6 @@
     }
   });
 
-  function handleMouseMove(e: MouseEvent) {
-    const target = e.currentTarget as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    target.style.setProperty('--x', `${x}px`);
-    target.style.setProperty('--y', `${y}px`);
-  }
 </script>
 
 <div class="fixed inset-0 -z-50 h-full w-full bg-[var(--bento-page-bg)]"
@@ -92,7 +84,7 @@
       <div
         class="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-[var(--bento-card-border)] bg-[var(--bento-card-bg)] p-3 shadow-sm backdrop-blur-3xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] animate-in fade-in slide-in-from-bottom-8 md:rounded-[2rem] md:p-7 duration-700"
         in:slide
-        onmousemove={handleMouseMove}
+        use:trackPointerPosition
         id={memo.slug}
         style="--x: 50%; --y: 50%; animation-delay: {(i % 15) * 100}ms; animation-fill-mode: both;"
       >
@@ -123,16 +115,9 @@
                     [&_pre]:bg-[var(--bento-pre-bg)] [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:border [&_pre]:border-[var(--bento-pre-border)] [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
                     [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[var(--bento-code-text)]
                     [&_.tag-link]:rounded-full [&_.tag-link]:px-3 [&_.tag-link]:py-1 [&_.tag-link]:text-xs [&_.tag-link]:font-medium [&_.tag-link]:tracking-wide [&_.tag-link]:transition-all [&_.tag-link]:bg-[var(--bento-tag-bg)] [&_.tag-link]:text-[var(--bento-tag-text)] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link:hover]:bg-[var(--bento-tag-bg-hover)] [&_.tag-link:hover]:text-[var(--bento-tag-text-hover)] {memoList.shouldClampMemo(memo) ? 'max-h-[28rem] overflow-hidden' : ''}"
-               onclick={(e: MouseEvent) => {
-                 const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
-                 if (target) {
-                     e.stopPropagation(); 
-                    const tag = target.dataset.tag;
-                    if (tag) memoList.selectTag(tag);
-                }
-             }}
+               use:delegateTagClicks={(tag) => memoList.selectTag(tag)}
           >
-            {@html marked.parse(memo.content)}
+            {@html memo.content}
           </div>
 
           {#if memoList.isMemoLong(memo)}

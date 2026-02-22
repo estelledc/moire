@@ -1,9 +1,9 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
   import {config} from '../../../moire.config';
+  import {delegateTagClicks} from '$lib/actions';
   import {createMemoList} from '$lib/memo.svelte';
   import type {PageData} from '../../routes/$types';
-  import {marked} from 'marked';
   import {format} from 'date-fns';
   import pixelIdle from '$lib/assets/pixel-idle.png';
   import pixelRun from '$lib/assets/pixel-run.png';
@@ -107,15 +107,9 @@
                         [&_pre_code]:bg-transparent [&_pre_code]:text-[var(--text-color)] [&_pre_code]:p-0
                         [&_.tag-link]:bg-[var(--bg-color)] [&_.tag-link]:text-[var(--accent-color)] [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:rounded-full [&_.tag-link]:text-[11px] [&_.tag-link]:no-underline [&_.tag-link]:mx-0.5 [&_.tag-link]:font-bold [&_.tag-link]:transition-all [&_.tag-link]:hover:scale-110 {memoList.shouldClampMemo(memo) ? 'max-h-[28rem] overflow-hidden' : ''}
                         "
-             onclick={(e) => {
-                const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
-                if (target) {
-                    const tag = target.dataset.tag;
-                    if (tag) memoList.selectTag(tag);
-                }
-             }}
+             use:delegateTagClicks={(tag) => memoList.selectTag(tag)}
           >
-            {@html marked.parse(memo.content)}
+            {@html memo.content}
           </div>
 
           {#if memoList.isMemoLong(memo)}

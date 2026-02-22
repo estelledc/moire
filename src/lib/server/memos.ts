@@ -9,7 +9,20 @@ export type Memo = {
   tags: string[];
 };
 
-export async function getMemos(): Promise<Memo[]> {
+let memoCachePromise: Promise<Memo[]> | null = null;
+
+function parseFrontmatterDate(rawValue: string, field: 'created' | 'modified', slug: string): Date | null {
+  const parsedDate = new Date(rawValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    console.error(`Invalid ${ field } date in frontmatter for ${ slug }: "${ rawValue }"`);
+    return null;
+  }
+
+  return parsedDate;
+}
+
+async function loadMemos(): Promise<Memo[]> {
   const memoModules = import.meta.glob('/src/memos/**/*.md', { query: '?raw', import: 'default', eager: true });
   const assetModules = import.meta.glob('/src/memos/**/*.{png,jpg,jpeg,gif,webp}', { eager: true });
 
@@ -59,24 +72,16 @@ export async function getMemos(): Promise<Memo[]> {
         const fm = fmMatch[1];
         markdownString = markdownString.replace(fmRegex, '').trim();
 
-        const createdMatch = fm.match(/created:\s*(.+)/);
+        const createdMatch = fm.match(/^created:\s*(.+)$/m);
         if (createdMatch) {
           const createdStr = createdMatch[1].trim();
-          try {
-            created = new Date(createdStr);
-          } catch (e) {
-            console.error(`Failed to parse created date from frontmatter for ${ slug }:`, e);
-          }
+          created = parseFrontmatterDate(createdStr, 'created', slug);
         }
 
-        const modifiedMatch = fm.match(/modified:\s*(.+)/);
+        const modifiedMatch = fm.match(/^modified:\s*(.+)$/m);
         if (modifiedMatch) {
           const modifiedStr = modifiedMatch[1].trim();
-          try {
-            modified = new Date(modifiedStr);
-          } catch (e) {
-            console.error(`Failed to parse modified date from frontmatter for ${ slug }:`, e);
-          }
+          modified = parseFrontmatterDate(modifiedStr, 'modified', slug);
         }
       }
 
@@ -132,6 +137,21 @@ export async function getMemos(): Promise<Memo[]> {
   memos.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return memos;
+}
+
+export async function getMemos(): Promise<Memo[]> {
+  if (import.meta.env.DEV) {
+    return loadMemos();
+  }
+
+  if (!memoCachePromise) {
+    memoCachePromise = loadMemos().catch((error) => {
+      memoCachePromise = null;
+      throw error;
+    });
+  }
+
+  return memoCachePromise;
 }
 
 export async function getMemoBySlug(slug: string): Promise<Memo | null> {

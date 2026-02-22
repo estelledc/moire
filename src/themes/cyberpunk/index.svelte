@@ -1,9 +1,9 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
   import {config} from '../../../moire.config';
+  import {delegateTagClicks} from '$lib/actions';
   import {createMemoList} from '$lib/memo.svelte';
   import type {PageData} from '../../routes/$types';
-  import {marked} from 'marked';
   import {format} from 'date-fns';
   import {onMount} from 'svelte';
 
@@ -147,15 +147,9 @@
                    [&_pre]:bg-black/40 [&_pre]:border [&_pre]:border-[var(--accent-color)]/30 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:my-4 [&_pre]:text-sm
                    [&_pre_code]:text-[var(--accent-color)] [&_pre_code]:bg-transparent [&_pre_code]:p-0
                    [&_.tag-link]:inline-block [&_.tag-link]:px-2 [&_.tag-link]:py-0.5 [&_.tag-link]:border [&_.tag-link]:border-[var(--text-color)]/30 [&_.tag-link]:text-[10px] [&_.tag-link]:tracking-widest [&_.tag-link]:uppercase [&_.tag-link]:text-[var(--text-color)]/60 [&_.tag-link:hover]:bg-[var(--text-color)] [&_.tag-link:hover]:text-[var(--bg-color)] [&_.tag-link]:transition-colors [&_.tag-link]:cursor-pointer [&_.tag-link]:no-underline {memoList.shouldClampMemo(memo) ? 'max-h-[30rem] overflow-hidden' : ''}"
-          onclick={(e) => {
-            const target = (e.target as HTMLElement).closest('.tag-link') as HTMLElement | null;
-            if (target) {
-              const tag = target.dataset.tag;
-              if (tag) memoList.selectTag(tag);
-            }
-          }}
+          use:delegateTagClicks={(tag) => memoList.selectTag(tag)}
         >
-          {@html marked.parse(memo.content)}
+          {@html memo.content}
         </div>
 
         {#if memoList.isMemoLong(memo)}
