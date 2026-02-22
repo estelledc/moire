@@ -60,6 +60,40 @@ Build for production:
 pnpm build
 ```
 
+### Quality checks
+
+Type-check the app:
+
+```bash
+pnpm check
+```
+
+Run memo smoke tests:
+
+```bash
+pnpm test
+```
+
+Run tests in watch mode:
+
+```bash
+pnpm test:watch
+```
+
+### Cleanup memo images
+
+Preview which images would be removed:
+
+```bash
+pnpm run cleanup:images -- --dry-run
+```
+
+Remove unused memo images:
+
+```bash
+pnpm run cleanup:images
+```
+
 ## License
 
 This project is licensed under the GPL-3.0 License.
