@@ -1,5 +1,7 @@
 <script lang="ts">
   import { format } from 'date-fns';
+  import { base } from '$app/paths';
+  import { page } from '$app/stores';
   import type { PageData } from './$types';
 
   import { config } from '../../../../moire.config';
@@ -7,7 +9,7 @@
   let { data }: { data: PageData } = $props();
 
   const baseUrl = config.url.replace(/\/$/, '');
-  const canonicalUrl = $derived(`${baseUrl}/m/${data.memo.slug}`);
+  const canonicalUrl = $derived(`${baseUrl}${$page.url.pathname}`);
   const plainText = $derived(data.memo.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim());
   const description = $derived(plainText.slice(0, 160));
 </script>
@@ -30,7 +32,7 @@
 
 <main class="mx-auto min-h-screen w-full max-w-3xl px-4 py-8">
   <a
-    href="/"
+    href={`${base}/`}
     class="inline-flex items-center rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-4 py-2 text-sm font-semibold text-[var(--bento-pill-text)] no-underline transition hover:bg-[var(--bento-pill-bg-hover)]"
   >
     Back to timeline
@@ -49,7 +51,7 @@
         <div class="mt-4 flex flex-wrap gap-2">
           {#each data.memo.tags as tag}
             <a
-              href={`/?tag=${encodeURIComponent(tag)}`}
+              href={`${base}/?tag=${encodeURIComponent(tag)}`}
               class="rounded-full bg-[var(--bento-tag-bg)] px-3 py-1 text-xs font-medium text-[var(--bento-tag-text)] no-underline transition hover:bg-[var(--bento-tag-bg-hover)] hover:text-[var(--bento-tag-text-hover)]"
             >
               #{tag}

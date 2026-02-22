@@ -1,5 +1,6 @@
 <script lang="ts">
   import { slide } from 'svelte/transition';
+  import { base } from '$app/paths';
   import {format} from 'date-fns';
   import {config} from '../../../moire.config';
   import {createMemoList} from '$lib/memo.svelte';
@@ -139,7 +140,7 @@
           >
             <span>{format(new Date(memo.date), 'MMM d, yyyy')}</span>
             <a
-              href={`/m/${memo.slug}`}
+              href={`${base}/m/${memo.slug}/`}
               class="rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-3 py-1 text-[10px] tracking-wider text-[var(--bento-pill-text)] no-underline transition-all hover:bg-[var(--bento-pill-bg-hover)]"
             >
               Open
