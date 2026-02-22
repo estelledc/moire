@@ -138,6 +138,12 @@
             class="mt-auto flex items-center justify-between pt-4 text-xs font-semibold tracking-wide text-[var(--bento-meta)] uppercase"
           >
             <span>{format(new Date(memo.date), 'MMM d, yyyy')}</span>
+            <a
+              href={`/m/${memo.slug}`}
+              class="rounded-full border border-[var(--bento-pill-border)] bg-[var(--bento-pill-bg)] px-3 py-1 text-[10px] tracking-wider text-[var(--bento-pill-text)] no-underline transition-all hover:bg-[var(--bento-pill-bg-hover)]"
+            >
+              Open
+            </a>
           </div>
         </div>
       </div>

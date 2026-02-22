@@ -19,7 +19,7 @@
             "@type": "BlogPosting",
             "headline": memo.slug, // Using slug as headline since there's no title
             "datePublished": memo.date instanceof Date ? memo.date.toISOString() : memo.date,
-            "url": `${config.url}/#${memo.slug}`,
+            "url": `${config.url}/m/${memo.slug}`,
             "articleBody": memo.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...', // Strip HTML for summary
             "keywords": memo.tags.join(', ')
         }))

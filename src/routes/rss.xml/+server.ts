@@ -19,9 +19,9 @@ export async function GET({ url }: { url: URL }) {
       .map(
         (memo) => `
       <item>
-        <guid isPermaLink="true">${ siteUrl }/#${ memo.slug }</guid>
+        <guid isPermaLink="true">${ siteUrl }/m/${ memo.slug }</guid>
         <title>${ memo.slug }</title>
-        <link>${ siteUrl }/#${ memo.slug }</link>
+        <link>${ siteUrl }/m/${ memo.slug }</link>
         <description><![CDATA[${ memo.content }]]></description>
         <pubDate>${ memo.date.toUTCString() }</pubDate>
       </item>

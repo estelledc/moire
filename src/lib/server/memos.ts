@@ -42,8 +42,7 @@ export async function getMemos(): Promise<Memo[]> {
             const assetUrl = assetModule && typeof assetModule === 'object' ? assetModule.default : assetModule;
 
             if (assetUrl) {
-              const normalizedAssetUrl = assetUrl.startsWith('/') ? `.${ assetUrl }` : assetUrl;
-              return `![${ alt }](${ normalizedAssetUrl })`;
+              return `![${ alt }](${ assetUrl })`;
             }
           }
 
@@ -133,4 +132,9 @@ export async function getMemos(): Promise<Memo[]> {
   memos.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   return memos;
+}
+
+export async function getMemoBySlug(slug: string): Promise<Memo | null> {
+  const memos = await getMemos();
+  return memos.find((memo) => memo.slug === slug) || null;
 }
